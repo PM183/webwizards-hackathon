@@ -200,6 +200,7 @@ Comprehensive analytics and poll management interface including:
 - Poll creation and management
 - Advanced analytics with charts
 - User management tools
+  
 
 ### 🗳️ **Voting Interface**
 Intuitive, secure voting experience featuring:
@@ -207,6 +208,8 @@ Intuitive, secure voting experience featuring:
 - Real-time fraud detection feedback
 - Accessible design for all users
 - Progress indicators and status updates
+  <img width="1918" height="888" alt="image" src="https://github.com/user-attachments/assets/a515a40b-9166-454b-b502-ec2de9aea630" />
+
 
 ### 📊 **Real-time Results**
 Live updating charts and statistics showing:
@@ -214,6 +217,8 @@ Live updating charts and statistics showing:
 - Participation rates over time
 - Geographic voting patterns
 - Engagement analytics
+  <img width="1754" height="877" alt="image" src="https://github.com/user-attachments/assets/68da8abf-6e8c-42de-a3ce-7caf476ac1da" />
+
 
 ---
 
