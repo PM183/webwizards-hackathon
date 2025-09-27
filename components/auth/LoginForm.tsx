@@ -29,7 +29,17 @@ export function LoginForm() {
     try {
       setIsLoading(true)
       await signIn(data)
-      router.push('/') // Middleware will redirect to appropriate dashboard
+
+      // Get the redirect parameter if it exists
+      const searchParams = new URLSearchParams(window.location.search)
+      const redirectPath = searchParams.get('redirect')
+
+      if (redirectPath && redirectPath !== '/') {
+        router.push(redirectPath)
+      } else {
+        // Instead of relying solely on middleware, redirect directly
+        router.push('/') // Middleware will redirect to appropriate dashboard
+      }
     } catch (error) {
       setError('root', {
         message: error instanceof Error ? error.message : 'Failed to sign in',

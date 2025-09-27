@@ -1,8 +1,32 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
+import { useAuth } from '../lib/hooks/useAuth'
+import { RoleBasedRedirect } from '../components/auth/RoleBasedRedirect'
 
 export default function Home() {
+  const { user, loading } = useAuth()
+  const [showRedirect, setShowRedirect] = useState(false)
+
+  useEffect(() => {
+    // If user is authenticated, show redirect component after a short delay
+    // This acts as a fallback if middleware doesn't redirect properly
+    if (user && !loading) {
+      const timer = setTimeout(() => {
+        console.log('Home page: User detected, showing redirect fallback')
+        setShowRedirect(true)
+      }, 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [user, loading])
+
+  // Show redirect component for authenticated users
+  if (user && showRedirect) {
+    return <RoleBasedRedirect />
+  }
   return (
     <div className="min-h-screen brand-gradient flex items-center justify-center px-4 py-12 overflow-hidden">
       {/* Animated Background Pattern */}

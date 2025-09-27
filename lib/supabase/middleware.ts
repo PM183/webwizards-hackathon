@@ -39,6 +39,15 @@ export async function updateSession(request: NextRequest) {
   const url = request.nextUrl.clone()
   const pathname = url.pathname
 
+  // Debug logging for Vercel deployment
+  console.log('Middleware executing:', {
+    pathname,
+    hasUser: !!user,
+    userId: user?.id,
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing',
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'missing'
+  })
+
   // Define route patterns
   const authRoutes = ['/login', '/register']
   const protectedRoutes = ['/admin', '/student', '/polls']
@@ -64,19 +73,30 @@ export async function updateSession(request: NextRequest) {
   if (user && isAuthRoute) {
     try {
       // Get user profile to determine role
-      const { data: profile } = await (supabase
+      const { data: profile, error } = await (supabase
         .from('profiles') as any)
         .select('role')
         .eq('id', user.id)
         .single()
 
+      console.log('Middleware auth route redirect - Profile fetch:', { profile, error, userId: user.id })
+
+      if (error) {
+        console.error('Profile fetch error:', error)
+        url.pathname = '/student'
+        return NextResponse.redirect(url)
+      }
+
       if ((profile as any)?.role === 'admin') {
+        console.log('Redirecting admin to /admin')
         url.pathname = '/admin'
       } else {
+        console.log('Redirecting user to /student')
         url.pathname = '/student'
       }
       return NextResponse.redirect(url)
-    } catch {
+    } catch (err) {
+      console.error('Exception in profile fetch:', err)
       // If profile fetch fails, redirect to student dashboard as fallback
       url.pathname = '/student'
       return NextResponse.redirect(url)
@@ -106,19 +126,30 @@ export async function updateSession(request: NextRequest) {
   // If user is on root path, redirect to appropriate dashboard
   if (user && pathname === '/') {
     try {
-      const { data: profile } = await (supabase
+      const { data: profile, error } = await (supabase
         .from('profiles') as any)
         .select('role')
         .eq('id', user.id)
         .single()
 
+      console.log('Middleware root redirect - Profile fetch:', { profile, error, userId: user.id })
+
+      if (error) {
+        console.error('Root redirect profile fetch error:', error)
+        url.pathname = '/student'
+        return NextResponse.redirect(url)
+      }
+
       if ((profile as any)?.role === 'admin') {
+        console.log('Root redirect: admin to /admin')
         url.pathname = '/admin'
       } else {
+        console.log('Root redirect: user to /student')
         url.pathname = '/student'
       }
       return NextResponse.redirect(url)
-    } catch {
+    } catch (err) {
+      console.error('Exception in root redirect profile fetch:', err)
       url.pathname = '/student'
       return NextResponse.redirect(url)
     }
